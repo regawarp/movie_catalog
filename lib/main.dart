@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:movie_catalog/detail.dart';
 
 import 'model/Movie.dart';
 
@@ -96,6 +97,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(widget.title),
       ),
@@ -105,12 +107,67 @@ class _MyHomePageState extends State<MyHomePage> {
           if (snapshot.hasError) {
             return Text('Error while retrieving data');
           } else if (snapshot.hasData) {
-            return ListView.builder(
+            return ListView.separated(
               itemCount: snapshot.data.length,
               itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text('${snapshot.data[index].title}'),
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => Detail(snapshot.data[index])));
+                  },
+                  child: Container(
+                    color: Colors.white,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Hero(
+                          tag: "Image ${snapshot.data[index].title}",
+                          child: Image.network(
+                            "${snapshot.data[index].image}",
+                            width: 100,
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Container(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '${snapshot.data[index].title}',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                SizedBox(height: 10),
+                                Row(
+                                  children: [
+                                    Text('${snapshot.data[index].year}'),
+                                    SizedBox(width: 10),
+                                    Text('${snapshot.data[index].duration}'),
+                                    SizedBox(width: 10),
+                                    Text('${snapshot.data[index].mpaRating}'),
+                                  ],
+                                ),
+                                SizedBox(height: 10),
+                                Row(
+                                  children: [
+                                    Icon(Icons.star, color: Colors.amber),
+                                    Text('${snapshot.data[index].rating}'),
+                                  ],
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 );
+              },
+              separatorBuilder: (context, index) {
+                return Divider();
               },
             );
           } else {
